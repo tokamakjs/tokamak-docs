@@ -36,7 +36,7 @@ module.exports = {
       {
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
-          editUrl: 'https://github.com/tokamakjs/tokamak-docs/',
+          editUrl: 'https://github.com/tokamakjs/tokamak-docs/edit/master',
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
