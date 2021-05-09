@@ -3,7 +3,7 @@ module.exports = {
   title: 'TokamakJS',
   tagline: 'A semi-opinionated React framework.',
   url: 'https://tokamakjs.github.io',
-  baseUrl: '/',
+  baseUrl: '/tokamakjs/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: './img/favicon.ico',
