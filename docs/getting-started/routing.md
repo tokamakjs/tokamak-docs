@@ -8,13 +8,6 @@ A route in **TokamakJS** is comprised of a **view** and a **controller**. Each v
 
 Finally, each route will have an associated path that will map the controller to the corresponding browser url.
 
-
-## Views
-
-Views are just regular React components that have a specific controller associated to them. Together with this controller, they compose a route in **TokamakJS**.
-
-// TODO
-
 ## Controllers
 
 Controllers are the main link between the view layer and the rest of the application. For that, they sit in a blurry line between what is considered application/business logic and what is considered view logic.
@@ -71,6 +64,10 @@ import { CounterView } from './counter.view';
 @Controller({ view: CounterView })
 class CounterController {
   @ref private _counter = 0;
+
+  get counter() {
+    return this._counter;
+  }
 
   public increase(): void {
     // this will not trigger a re-render as the property is decorated with @ref
@@ -152,9 +149,9 @@ An execution order is not guaranteed when having multiple methods decorated with
 
 ## Tracking Property Values
 
-It's possible to track changes to properties using the `@effect()` decorator.
+It's possible to track changes to properties using the `@effect()` decorator. It takes a single argument that is the current instance of the class and should return an array with a set of values to track between re-renders.
 
-// TODO
+The behavior is the same as before, any method decorated with this decorator will run when the any of the tracked values change. It also supports returning a void callback to perform any teardown between re-renders.
 
 ```ts
 import { Controller, effect } from '@tokamakjs/react';
@@ -174,8 +171,51 @@ class CounterController {
 }
 ```
 
+:::info
+Decorators `onDidMount()` and `onDidRender()` are just useful abstractions over simply using the effect decorator with an empty array as dependencies, `@effect(() => [])` or with no dependencies `@effect()` respectively.
+:::
+
+
+## Views
+
+Views are just regular React components that have a specific controller associated to them. Together with this controller, they compose a route in **TokamakJS**.
+
+We can access the associated controller by using the provided `useController()` hook.
+
+```ts
+import { useController } from '@tokamakjs/react';
+
+import { CounterController } from './counter.controller';
+
+// As we can see, a view is just a regular React function component
+export const CounterView = () => {
+  const ctrl = useController<CounterController>();
+
+  return (
+    <div>
+      <span>value: {ctrl.counter}</span> // we can read values from the controller
+      <button onClick={() => ctrl.increase()}>Increase</button> // or we can call methods
+    </div>
+  )
+};
+```
+
+:::tip **Views are 100% compatible with existing React hooks**
+
+Even though nothing prevents you from doing so, try to put the least amount of business logic in the views. The views should only contain basic view logic like: *Is the modal visible? is this component toggled on or off? etc.* That way, we can change the look of the application in the future without having to change the rest of the business logic.
+:::
+
 ## Using Routes
 
-// TODO
+After we've created our controller and our view, we have to tell **TokamakJS** about them. Controllers always belong to a *SubApp* since they're directly involved in the routing of the application. To add a controller to a **TokamakJS** sub-app simply use the provided `createRoute()` helper and add the resulting route to the `routing` array in the corresponding `@SubApp()` decorator.
 
-Add them to `routing` in subapps and use `createRoute`
+```ts
+import { SubApp } from '@tokmamakjs/react';
+
+import { CounterController } from './routes/counter';
+
+@SubApp({
+  routing: [createRoute('/', CounterController)],
+})
+export class AppModule {}
+```
