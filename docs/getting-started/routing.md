@@ -147,7 +147,7 @@ The `onDidRender()` decorator can be compared to using the `useEffect()` hook wi
 An execution order is not guaranteed when having multiple methods decorated with the life-cycle decorators so don't make any assumptions based on it.
 :::
 
-## Tracking Property Values
+## Tracking property values
 
 It's possible to track changes to properties using the `@effect()` decorator. It takes a single argument that is the current instance of the class and should return an array with a set of values to track between re-renders.
 
@@ -205,17 +205,73 @@ export const CounterView = () => {
 Even though nothing prevents you from doing so, try to put the least amount of business logic in the views. The views should only contain basic view logic like: *Is the modal visible? is this component toggled on or off? etc.* That way, we can change the look of the application in the future without having to change the rest of the business logic.
 :::
 
-## Using Routes
+## Using routes
 
 After we've created our controller and our view, we have to tell **TokamakJS** about them. Controllers always belong to a *SubApp* since they're directly involved in the routing of the application. To add a controller to a **TokamakJS** sub-app simply use the provided `createRoute()` helper and add the resulting route to the `routing` array in the corresponding `@SubApp()` decorator.
 
 ```ts
-import { SubApp } from '@tokmamakjs/react';
+import { SubApp, createRoute } from '@tokmamakjs/react';
 
 import { CounterController } from './routes/counter';
 
 @SubApp({
   routing: [createRoute('/', CounterController)],
+})
+export class AppModule {}
+```
+
+### Nested routes
+
+It's also possible to nest routes in **TokamakJS**. The children routes will have the parent route path appended to them as basepath.
+
+First, add children routes to the parent route:
+
+```ts
+import { SubApp, createRoute } from '@tokmamakjs/react';
+
+import { ParentController } from './routes/parent';
+import { ChildController } from './routes/child';
+
+@SubApp({
+  routing: [createRoute('/', ParentController, [
+    createRoute('/child', ChildController),
+  ])],
+})
+export class AppModule {}
+```
+
+And then, use the `<Outlet />` component in the parent view to render the child when needed:
+
+```ts
+import { Outlet } from '@tokamakjs/react';
+
+import { Header, Container } from '../components';
+
+export const ParentView = () => {
+  return <Container>
+    <Header />
+    <Outlet /> {/* <- ChildView will be rendered here when path equals '/child' */}
+  </Container>
+};
+```
+
+### Routes from other sub-apps
+
+Finally, it's also possible to include routes from other subapps when composing multiple of them together. Use the provided `includeRoutes()` function to do so. E.g.
+
+```ts
+import { SubApp, createRoute, includeRoutes } from '@tokamakjs/react';
+
+import { FooModule } from './modules/foo';
+import { BarModule } from './modules/bar';
+
+@SubApp({
+  routing: [
+    // Every route inside FooModule will be prefixed with `/foo`
+    includeRoutes('/foo', FooModule),
+    // Every route inside BarModule will be prefixed with `/bar`
+    includeRoutes('/bar', BarModule),
+  ],
 })
 export class AppModule {}
 ```
