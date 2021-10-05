@@ -23,7 +23,7 @@ export default function Home() {
           display: 'flex',
           flexDirection: 'column',
         }}>
-          <img height="54px" style={{ marginBottom: '2rem' }} src={'/static/img/logo.svg'} />
+          <img height="54px" style={{ marginBottom: '2rem' }} src={'/tokamakjs/img/logo.svg'} />
           <h1 style={{ textAlign: 'center'}}>A semi-opinionated React framework</h1>
           <code style={{ textAlign: 'center'}} >$ npm i -g @tokamakjs/cli<br/>$ tok new your-project-name</code>
         </div>
