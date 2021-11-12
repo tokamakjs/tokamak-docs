@@ -314,3 +314,28 @@ import { fetchAuthToken } from './utils';
 })
 export class AppModule {}
 ```
+
+## Global Providers
+
+In certain scenarios, you will need a provider that it's not really directly related to any of the modules of your app. For those situations, **TokamakJS** makes possible defining global providers that you can import from anywhere in your app. To define a global provider simple add it to the `globalProviders` array when creating a **TokamakJS** app:
+
+```ts
+import { TokamakApp } from '@tokamakjs/react';
+
+import { AppModule } from './app/app.module';
+import { GlobalProvider } from './app/global.provider';
+
+async function bootstrap() {
+  const app = await TokamakApp.create(AppModule, {
+    globalProviders: [GlobalProvider]
+  });
+
+  app.render('#root');
+}
+
+bootstrap();
+```
+
+:::tip
+You can use any type of provider as a global provider. This means regular providers defined using decorators such as `@Injectable()` and `@HookService()` or custom providers like the ones described in the previous section.
+:::
