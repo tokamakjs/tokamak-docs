@@ -18,7 +18,7 @@ tok new project-name
 
 This will create a basic app skeleton together with a bunch of other required files.
 
-*FILE_TREE*
+*TODO: FILE_TREE*
 
 The entry point of our application is the `index.ts` file inside the `src` directory:
 
@@ -36,6 +36,36 @@ bootstrap();
 ```
 
 In this file we have a basic `bootstrap` function that we use to create a new **TokamakJS** instance using the main module of our application. After that, we just render the newly created app. We can also use this function to perform any pre-initialization steps we might need before running the app.
+
+### App context
+
+When rendering the app, it's possible to add a global context that you can later access with `useAppContext()` in any place where hooks can be used.
+
+```ts
+import { TokamakApp } from '@tokamakjs/react';
+
+import { AppModule } from './app/app.module';
+
+async function bootstrap() {
+  const appContext = { foo: 'bar' };
+
+  const app = await TokamakApp.create(AppModule);
+  app.render('#root', appContext);
+}
+
+bootstrap();
+```
+
+And in a view or a place where hooks can be used:
+
+```tsx
+import { useAppContext } from '@tokamakjs/react';
+
+const MyView = () => {
+  const appContext = useAppContext();
+  return <div>{appContext.foo}</div>;
+};
+```
 
 ## Running the Application
 
